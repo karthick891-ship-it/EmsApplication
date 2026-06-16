@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMS · Workforce Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">EM</div>
+        <div class="brand-text">
+          <span class="brand-name">EMS</span>
+          <span class="brand-sub">Workforce Hub</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="overview" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span>Overview</span>
+        </button>
+        <button class="nav-item" data-view="directory" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Directory</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="dot"></span>
+        <span>Spring Boot &middot; H2 in-memory</span>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">Overview</h1>
+          <p id="page-subtitle">A snapshot of your workforce, updated in real time.</p>
+        </div>
+        <button class="btn btn-accent" id="open-add-modal" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add employee
+        </button>
+      </header>
+
+      <!-- Overview view -->
+      <section id="view-overview" class="view active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Total employees</span>
+            <span class="stat-value" id="stat-total">&mdash;</span>
+            <span class="stat-foot">Across all departments</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Departments</span>
+            <span class="stat-value" id="stat-departments">&mdash;</span>
+            <span class="stat-foot">Active teams</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Average salary</span>
+            <span class="stat-value" id="stat-avg-salary">&mdash;</span>
+            <span class="stat-foot">Per employee, annual</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">New hires</span>
+            <span class="stat-value" id="stat-new-hires">&mdash;</span>
+            <span class="stat-foot">Joined this month</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Department mix</h2>
+            <p>How your headcount is distributed across teams</p>
+          </div>
+          <div class="dept-bar" id="dept-bar"></div>
+          <ul class="dept-legend" id="dept-legend"></ul>
+        </div>
+      </section>
+
+      <!-- Directory view -->
+      <section id="view-directory" class="view">
+        <div class="toolbar">
+          <label class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="search-input" placeholder="Search by name, email, department or title&hellip;" />
+          </label>
+          <select id="department-filter" aria-label="Filter by department">
+            <option value="">All departments</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table class="employee-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Job title</th>
+                <th>Salary</th>
+                <th>Joined</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employee-tbody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h3>No employees found</h3>
+            <p id="empty-state-text">Try a different search or add your first employee.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add / Edit modal -->
+  <div class="modal-overlay" id="employee-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Add employee</h2>
+        <button class="icon-btn" id="close-modal" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="employee-form" novalidate>
+        <input type="hidden" id="employee-id" />
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" required maxlength="50" />
+            <span class="field-error" data-for="firstName"></span>
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" required maxlength="50" />
+            <span class="field-error" data-for="lastName"></span>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required maxlength="100" />
+            <span class="field-error" data-for="email"></span>
+          </div>
+          <div class="field">
+            <label for="phoneNumber">Phone</label>
+            <input id="phoneNumber" name="phoneNumber" type="tel" placeholder="+91 90000 00000" />
+            <span class="field-error" data-for="phoneNumber"></span>
+          </div>
+
+          <div class="field">
+            <label for="department">Department</label>
+            <input id="department" name="department" type="text" required list="department-options" />
+            <datalist id="department-options"></datalist>
+            <span class="field-error" data-for="department"></span>
+          </div>
+          <div class="field">
+            <label for="jobTitle">Job title</label>
+            <input id="jobTitle" name="jobTitle" type="text" required maxlength="80" />
+            <span class="field-error" data-for="jobTitle"></span>
+          </div>
+
+          <div class="field">
+            <label for="salary">Annual salary (&#8377;)</label>
+            <input id="salary" name="salary" type="number" min="0" step="0.01" required />
+            <span class="field-error" data-for="salary"></span>
+          </div>
+          <div class="field">
+            <label for="dateOfJoining">Date of joining</label>
+            <input id="dateOfJoining" name="dateOfJoining" type="date" required />
+            <span class="field-error" data-for="dateOfJoining"></span>
+          </div>
+        </div>
+
+        <div class="form-error hidden" id="form-error"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancel-modal">Cancel</button>
+          <button type="submit" class="btn btn-accent" id="save-button">Save employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal modal-sm">
+      <h2>Remove employee?</h2>
+      <p id="confirm-text">This will permanently remove the employee record.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="confirm-cancel" type="button">Cancel</button>
+        <button class="btn btn-danger" id="confirm-delete" type="button">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/js/script.js"></script>
+</body>
+</html>
